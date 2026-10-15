@@ -1,0 +1,1240 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CNN Interactive Documentation & Simulator (FR / EN)</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.42.0/dist/tabler-icons.min.css">
+  <style>
+    :root {
+      color-scheme: light dark;
+      --surface-0: light-dark(#f6f6f4, #0f0f0f);
+      --surface-1: light-dark(#ffffff, #181817);
+      --surface-2: light-dark(#f0efec, #222220);
+      --text-primary: light-dark(#141413, #faf9f5);
+      --text-secondary: light-dark(#52514e, #c2c0b6);
+      --text-muted: light-dark(#898781, #898781);
+      --border: light-dark(rgba(0,0,0,0.12), rgba(255,255,255,0.12));
+      --border-strong: light-dark(rgba(0,0,0,0.25), rgba(255,255,255,0.25));
+      --accent: light-dark(#256abf, #5598e7);
+      --bg-accent: light-dark(#e7f1fb, #102a4c);
+      --radius: 8px;
+      --font-sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: var(--font-sans);
+      background: var(--surface-0);
+      color: var(--text-primary);
+      padding: 20px;
+      line-height: 1.5;
+    }
+
+    .container {
+      max-width: 1150px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .header {
+      background: var(--surface-1);
+      padding: 18px 22px;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .header h1 { font-size: 20px; font-weight: 600; }
+    .header p { font-size: 13px; color: var(--text-secondary); }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .lang-switch {
+      display: inline-flex;
+      background: var(--surface-2);
+      border: 1px solid var(--border-strong);
+      border-radius: 6px;
+      overflow: hidden;
+    }
+    .lang-btn {
+      border: none;
+      background: transparent;
+      padding: 6px 12px;
+      font-size: 12.5px;
+      font-weight: 600;
+      cursor: pointer;
+      color: var(--text-secondary);
+      border-radius: 0;
+    }
+    .lang-btn.active {
+      background: var(--accent);
+      color: #ffffff;
+    }
+
+    /* Controls Toolbar */
+    .toolbar {
+      background: var(--surface-1);
+      padding: 16px;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 14px;
+    }
+    .ctrl-group {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+    .ctrl-group label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    select, button, input[type="number"] {
+      padding: 7px 10px;
+      font-size: 13px;
+      background: var(--surface-2);
+      color: var(--text-primary);
+      border: 1px solid var(--border-strong);
+      border-radius: 6px;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    button:hover, select:hover { border-color: var(--accent); }
+    button.active, .pill.active {
+      background: var(--bg-accent);
+      color: var(--accent);
+      border-color: var(--accent);
+      font-weight: 600;
+    }
+    .btn-sm { padding: 4px 8px; font-size: 12px; }
+
+    /* Navigation Steps */
+    .steps-bar {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .pill {
+      padding: 8px 14px;
+      border-radius: 999px;
+      font-size: 13px;
+      background: var(--surface-1);
+      border: 1px solid var(--border-strong);
+    }
+
+    /* Main Stage */
+    .main-card {
+      background: var(--surface-1);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+    }
+    .cap-banner {
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--accent);
+      margin-bottom: 16px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border);
+    }
+    #stage {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      flex-wrap: wrap;
+      min-height: 260px;
+      padding: 10px 0;
+    }
+
+    /* Slider & Calc Box */
+    .slider-bar {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-top: 16px;
+      background: var(--surface-2);
+      padding: 10px 14px;
+      border-radius: var(--radius);
+    }
+    .slider-bar input[type="range"] { flex: 1; cursor: pointer; }
+    .calc-box {
+      margin-top: 14px;
+      background: var(--surface-2);
+      border-left: 3px solid var(--accent);
+      border-radius: 4px;
+      padding: 12px 16px;
+      font-family: var(--font-mono);
+      font-size: 13px;
+      line-height: 1.7;
+    }
+
+    /* Documentation Box (A to Z) */
+    .doc-card {
+      background: var(--surface-1);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+    }
+    .doc-card h3 {
+      font-size: 16px;
+      margin-bottom: 10px;
+      color: var(--accent);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .doc-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    @media (max-width: 768px) { .doc-grid { grid-template-columns: 1fr; } }
+    .doc-section {
+      background: var(--surface-2);
+      padding: 14px;
+      border-radius: 6px;
+      font-size: 13.5px;
+    }
+    .doc-section h4 { margin-bottom: 6px; font-size: 14px; color: var(--text-primary); }
+    .formula {
+      display: inline-block;
+      background: var(--surface-1);
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-family: var(--font-mono);
+      font-size: 12.5px;
+      margin-top: 8px;
+      border: 1px solid var(--border);
+    }
+
+    /* Layer Manager */
+    .layer-chips {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      align-items: center;
+      margin-top: 4px;
+    }
+    .layer-chip {
+      background: var(--surface-1);
+      border: 1px solid var(--border-strong);
+      border-radius: 6px;
+      padding: 3px 8px;
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .layer-chip button {
+      padding: 0 5px;
+      font-size: 11px;
+      line-height: 1.2;
+    }
+
+    .nav-footer {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 16px;
+    }
+    .interactive-hint {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <!-- Header -->
+  <div class="header">
+    <div>
+      <h1 id="ui-title">🧠 Documentation & Simulateur CNN (A - Z)</h1>
+      <p id="ui-subtitle">Explorez le Padding, les Filtres, l'Activation, le Pooling et modifiez l'architecture du réseau de neurones.</p>
+    </div>
+    <div class="header-actions">
+      <div class="lang-switch" role="group" aria-label="Language selector">
+        <button id="lang-fr" class="lang-btn active" onclick="setLanguage('fr')">🇫🇷 FR</button>
+        <button id="lang-en" class="lang-btn" onclick="setLanguage('en')">🇬🇧 EN</button>
+      </div>
+      <button onclick="resetAll()"><i class="ti ti-refresh"></i> <span id="ui-reset">Réinitialiser</span></button>
+    </div>
+  </div>
+
+  <!-- Global Interactive Configuration Toolbar -->
+  <div class="toolbar">
+    <!-- Preset Image -->
+    <div class="ctrl-group">
+      <label>
+        <span id="ui-lbl-img">1. Image (8×8)</span>
+        <span id="ui-lbl-img-hint" style="font-weight:normal;font-size:11px">(Cliquez sur un pixel)</span>
+      </label>
+      <select id="presetImg" onchange="changePresetImage(this.value)"></select>
+    </div>
+
+    <!-- Padding Control -->
+    <div class="ctrl-group">
+      <label id="ui-lbl-pad">2. Padding (Bordures)</label>
+      <select id="padSelect" onchange="updateParams()"></select>
+    </div>
+
+    <!-- Filter Type Control -->
+    <div class="ctrl-group">
+      <label id="ui-lbl-filter">3. Filtre / Noyau (3×3)</label>
+      <select id="filterSelect" onchange="changeFilterPreset(this.value)"></select>
+    </div>
+
+    <!-- Activation & Pooling -->
+    <div class="ctrl-group">
+      <label id="ui-lbl-actpool">4. Activation & Pooling</label>
+      <div style="display:flex;gap:6px">
+        <select id="actSelect" onchange="updateParams()" style="flex:1">
+          <option value="relu">ReLU</option>
+          <option value="leaky">Leaky ReLU</option>
+          <option value="none">Linear (None)</option>
+        </select>
+        <select id="poolSelect" onchange="updateParams()" style="flex:1">
+          <option value="max">Max Pool</option>
+          <option value="avg">Avg Pool</option>
+          <option value="min">Min Pool</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Neural Network Layers Control -->
+    <div class="ctrl-group" style="grid-column: span 2;">
+      <label>
+        <span id="ui-lbl-arch">5. Architecture du Réseau (Ajouter / Supprimer des Couches)</span>
+        <span style="display:flex;gap:4px">
+          <button class="btn-sm" onclick="addLayer()" id="ui-btn-add-layer">+ Couche</button>
+          <button class="btn-sm" onclick="removeLayer()" id="ui-btn-rem-layer">- Couche</button>
+        </span>
+      </label>
+      <div id="layerManager" class="layer-chips"></div>
+    </div>
+  </div>
+
+  <!-- Step Pills -->
+  <div id="steps" class="steps-bar"></div>
+
+  <!-- Interactive Stage Card -->
+  <div class="main-card">
+    <div id="cap" class="cap-banner"></div>
+    <div id="stage"></div>
+
+    <!-- Animation Slider for Convolution & Pooling -->
+    <div id="ctrl" class="slider-bar" style="display:none">
+      <span id="ctrlLabel" style="font-size:13px;font-weight:500;min-width:130px"></span>
+      <input type="range" id="slider" min="0" max="35" step="1" value="0">
+      <button id="play" style="min-width:80px">Play ▶</button>
+    </div>
+
+    <!-- Live Math Calculation -->
+    <div id="calc" class="calc-box" style="display:none"></div>
+
+    <!-- Back / Next Buttons -->
+    <div class="nav-footer">
+      <button id="back">← Précédent</button>
+      <button id="next">Suivant →</button>
+    </div>
+  </div>
+
+  <!-- A-Z Documentation Panel -->
+  <div class="doc-card">
+    <h3><i class="ti ti-book"></i> <span id="ui-doc-header">Documentation Complète (A - Z) — Explication de l'étape</span></h3>
+    <div id="docContent" class="doc-grid"></div>
+  </div>
+</div>
+
+<script>
+// ==================== 1. INTERNATIONALIZATION (FR / EN) ====================
+var lang = 'fr';
+
+var i18n = {
+  fr: {
+    title: "🧠 Documentation & Simulateur CNN (A - Z)",
+    subtitle: "Explorez le Padding, les Filtres, l'Activation, le Pooling et modifiez l'architecture du réseau de neurones.",
+    reset: "Réinitialiser",
+    lblImg: "1. Image d'entrée (8×8)",
+    lblImgHint: "(Cliquez sur un pixel)",
+    lblPad: "2. Padding (Bordures)",
+    lblFilter: "3. Type de Filtre / Kernel (3×3)",
+    lblActPool: "4. Activation & Pooling",
+    lblArch: "5. Architecture du Réseau (Ajouter / Supprimer des Couches)",
+    btnAddLayer: "+ Couche",
+    btnRemLayer: "- Couche",
+    back: "← Précédent",
+    next: "Suivant →",
+    play: "Play ▶",
+    pause: "Pause ⏸",
+    docHeader: "Documentation Complète (A - Z) — Explication de l'étape actuelle",
+    whatTitle: "Que se passe-t-il à cette étape ?",
+    whyTitle: "Pourquoi est-ce essentiel dans un CNN ?",
+    imgPresets: {
+      '7': "Chiffre 7",
+      'x': "Lettre X",
+      'box': "Carré (Boîte)",
+      'line': "Ligne Verticale"
+    },
+    padOptions: {
+      none: "Valid (p = 0) → Sortie : 6×6",
+      zero1: "Same / Zero Padding (p = 1) → Sortie : 8×8",
+      zero2: "Zero Padding (p = 2) → Sortie : 10×10",
+      rep1: "Replicate Padding (p = 1) → Sortie : 8×8"
+    },
+    filterOptions: {
+      vert: "Bordure Verticale (Vertical Edge)",
+      horiz: "Bordure Horizontale (Horizontal Edge)",
+      sobelV: "Sobel Vertical",
+      sobelH: "Sobel Horizontal",
+      sharpen: "Netteté (Sharpen)",
+      blur: "Flou (Box Blur)",
+      emboss: "Relief (Emboss)",
+      outline: "Contour / Laplacien (Outline)",
+      identity: "Identité (Identity)",
+      custom: "-- Personnalisé (Modifié manuellement) --"
+    },
+    names: [
+      "1. Image",
+      "2. Nombres & Padding",
+      "3. Convolution (Filtre)",
+      "4. Activation (ReLU)",
+      "5. Pooling",
+      "6. Flatten & Réseau Dense"
+    ],
+    caps: [
+      "Une image est une grille de petits carrés appelés pixels. Cliquez sur n'importe quel pixel pour dessiner !",
+      "L'ordinateur ne voit que des nombres (0 = blanc, 9 = noir). Le Padding ajoute des bordures autour de l'image.",
+      "Un filtre 3×3 glisse sur l'image (Convolution). Cliquez directement sur les cellules du filtre pour modifier ses poids !",
+      "Fonction d'Activation (ex: ReLU) : remplace les valeurs négatives par 0 pour introduire de la non-linéarité.",
+      "Pooling : réduit la taille de la carte de caractéristiques (Feature Map) en gardant le maximum ou la moyenne de chaque bloc 2×2.",
+      "Flatten & Réseau : aligne les nombres en un vecteur 1D envoyé au réseau de neurones. Ajoutez ou supprimez des couches !"
+    ],
+    stageLabels: {
+      pic8x8: "Image, 8×8 pixels",
+      clickPixelHint: "👆 Cliquez sur un carré pour dessiner ou effacer !",
+      clickPixelTitle: "Cliquez pour inverser ce pixel",
+      clickFilterTitle: "Cliquez pour modifier le poids",
+      matrixPad: "Matrice Numérique + Padding",
+      padHintActive: "Les cellules hachurées en bleu représentent le Padding",
+      padHintZero: "Padding = 0 (Valid). Essayez de changer le Padding ci-dessus !",
+      padFormula: "Formule du Padding : Sortie_Padded = Entrée (8) + 2 × Padding",
+      inputPad: "Entrée + Padding",
+      filter3x3: "Filtre / Noyau (3×3)",
+      filterHint: "👆 Cliquez sur les poids du filtre pour les éditer !",
+      fmap: "Feature Map",
+      row: "Ligne",
+      sum: "Somme (Produit scalaire)",
+      formula: "Formule",
+      afterAct: "Après",
+      reluDesc: "toute valeur inférieure à 0 devient 0, les valeurs positives restent intactes.",
+      leakyDesc: "les valeurs négatives sont multipliées par 0.2 au lieu d'être annulées.",
+      linearDesc: "les valeurs restent exactement telles qu'elles sortent de la convolution.",
+      afterPool: "Après Pooling",
+      sizeReduced: "Taille réduite de",
+      to: "à",
+      pooled: "Sortie Pooling",
+      flatVec: "Vecteur Aplati (Flatten)",
+      netArch: "Architecture du Réseau",
+      totalParams: "Total des Paramètres (Poids + Biais)",
+      moveFilter: "Déplacer le filtre",
+      movePool: "Déplacer la fenêtre",
+      svgInput: "Entrée",
+      svgHidden: "Cachée",
+      svgOutput: "Sortie",
+      svgClass1: "Classe 1 (C'est un 7)",
+      svgClass0: "Classe 0 (Pas un 7)",
+      svgMore: "de plus..."
+    },
+    docs: [
+      {
+        title: "A. Image d'Entrée (Input Layer)",
+        what: "En vision par ordinateur, chaque image est représentée par une matrice 2D (niveaux de gris) ou un tenseur 3D (Hauteur × Largeur × Canaux RGB).",
+        why: "Ici, nous utilisons une image 8×8 en niveaux de gris avec des intensités de 0 (blanc) à 9 (noir) pour simplifier la lecture (en réalité de 0 à 255).",
+        math: "Input Shape = (H, W, C) = (8, 8, 1)"
+      },
+      {
+        title: "B. Padding (Gestion des Bordures)",
+        what: "Le Padding consiste à ajouter des rangées de zéros (Zero Padding) ou à dupliquer les pixels de bord (Replicate Padding) autour de l'image.",
+        why: "Sans padding (Valid, p=0), la carte rétrécit à chaque convolution (8×8 devient 6×6) et les pixels des bords sont sous-exploités. Le 'Same Padding' (p=1 avec filtre 3×3) conserve les dimensions exactes (8×8).",
+        math: "N_padded = N + 2P  |  N_out = (N + 2P - K) / S + 1"
+      },
+      {
+        title: "C. Convolution & Filtres (Kernels)",
+        what: "Un filtre (ou noyau) est une petite matrice de poids (3×3) qui glisse sur l'image avec un pas (Stride = 1) et effectue une multiplication élément par élément suivie d'une somme.",
+        why: "Chaque filtre détecte un motif local spécifique : bords verticaux, bords horizontaux, contraste, flou, etc. Lors de l'entraînement d'un CNN, le réseau apprend lui-même les valeurs optimales de ces filtres par rétropropagation.",
+        math: "G[i, j] = ∑_a ∑_b ( I_padded[i+a, j+b] × F[a, b] )"
+      },
+      {
+        title: "D. Fonction d'Activation (ReLU / Leaky ReLU)",
+        what: "Après la convolution, une fonction d'activation non-linéaire est appliquée à chaque valeur de la Feature Map. La plus courante est ReLU (Rectified Linear Unit).",
+        why: "Sans fonction d'activation, empiler plusieurs couches reviendrait à une simple opération linéaire incapable d'apprendre des formes complexes. ReLU met à zéro les valeurs négatives tout en gardant une dérivée simple.",
+        math: "ReLU(x) = max(0, x)  |  LeakyReLU(x) = max(0.2x, x)"
+      },
+      {
+        title: "E. Couche de Pooling (Sous-échantillonnage)",
+        what: "Le Pooling découpe la Feature Map en blocs (ici 2×2 avec un pas de 2) et résume chaque bloc par une seule valeur : le maximum (Max Pooling), la moyenne (Average) ou le minimum.",
+        why: "1) Réduit la dimension spatiale de moitié, diminuant le coût de calcul et le risque de surapprentissage (Overfitting). 2) Apporte une invariance aux petites translations de l'image.",
+        math: "Out_pool = floor(N_conv / 2)  |  MaxPool = max(a, b, c, d)"
+      },
+      {
+        title: "F. Aplatissement (Flatten) & Couches Entièrement Connectées (Dense)",
+        what: "L'opération Flatten transforme la matrice 2D issue du Pooling en un vecteur 1D qui sert d'entrée à un Perceptron Multicouche (MLP / Fully Connected Network).",
+        why: "Les couches de convolution et de pooling agissent comme un extracteur de caractéristiques visuelles, tandis que les couches denses combinent ces caractéristiques pour effectuer la classification finale.",
+        math: "y = σ( W · x + b )  |  Total Params = ∑ (N_in × N_out + N_out)"
+      }
+    ]
+  },
+  en: {
+    title: "🧠 CNN Interactive Documentation & Simulator (A - Z)",
+    subtitle: "Explore Padding, Filters, Activation, Pooling, and customize the neural network architecture in real time.",
+    reset: "Reset",
+    lblImg: "1. Input Image (8×8)",
+    lblImgHint: "(Click any pixel)",
+    lblPad: "2. Padding (Borders)",
+    lblFilter: "3. Filter / Kernel Type (3×3)",
+    lblActPool: "4. Activation & Pooling",
+    lblArch: "5. Network Architecture (Add / Remove Layers)",
+    btnAddLayer: "+ Layer",
+    btnRemLayer: "- Layer",
+    back: "← Back",
+    next: "Next →",
+    play: "Play ▶",
+    pause: "Pause ⏸",
+    docHeader: "Complete Documentation (A - Z) — Current Step Explanation",
+    whatTitle: "What happens in this step?",
+    whyTitle: "Why is this essential in a CNN?",
+    imgPresets: {
+      '7': "Digit 7",
+      'x': "Letter X",
+      'box': "Square Box",
+      'line': "Vertical Line"
+    },
+    padOptions: {
+      none: "Valid (p = 0) → Output: 6×6",
+      zero1: "Same / Zero Padding (p = 1) → Output: 8×8",
+      zero2: "Zero Padding (p = 2) → Output: 10×10",
+      rep1: "Replicate Padding (p = 1) → Output: 8×8"
+    },
+    filterOptions: {
+      vert: "Vertical Edge",
+      horiz: "Horizontal Edge",
+      sobelV: "Sobel Vertical",
+      sobelH: "Sobel Horizontal",
+      sharpen: "Sharpen",
+      blur: "Box Blur",
+      emboss: "Emboss",
+      outline: "Outline / Laplacian",
+      identity: "Identity",
+      custom: "-- Custom (Manually Edited) --"
+    },
+    names: [
+      "1. Picture",
+      "2. Numbers & Padding",
+      "3. Convolution (Filter)",
+      "4. Activation (ReLU)",
+      "5. Pooling",
+      "6. Flatten & Dense Net"
+    ],
+    caps: [
+      "A picture is a grid of tiny squares called pixels. Click on any pixel on the grid to draw or erase!",
+      "The computer only sees numbers (0 = white, 9 = black). Padding adds border pixels around the input image.",
+      "Slide a 3×3 filter over the image (Convolution). Click directly on any filter cell to customize its weights!",
+      "Activation Function (e.g. ReLU): turns negative numbers into 0 to introduce non-linearity into the network.",
+      "Pooling: downsamples the feature map by keeping only the maximum or average value of each 2×2 block.",
+      "Flatten & Dense Layers: unrolls the 2D map into a 1D vector fed into the neural network. Add or remove hidden layers!"
+    ],
+    stageLabels: {
+      pic8x8: "Picture, 8×8 pixels",
+      clickPixelHint: "👆 Click on any square to draw or erase!",
+      clickPixelTitle: "Click to toggle pixel",
+      clickFilterTitle: "Click to change weight",
+      matrixPad: "Numeric Matrix + Padding",
+      padHintActive: "Blue hatched cells represent the added Padding",
+      padHintZero: "Padding = 0 (Valid). Try changing the Padding mode above!",
+      padFormula: "Padding Formula: Output_Padded = Input (8) + 2 × Padding",
+      inputPad: "Input + Padding",
+      filter3x3: "Filter / Kernel (3×3)",
+      filterHint: "👆 Click on the filter weights to edit them!",
+      fmap: "Feature Map",
+      row: "Row",
+      sum: "Sum (Dot product)",
+      formula: "Formula",
+      afterAct: "After",
+      reluDesc: "any number less than 0 becomes 0, positive numbers stay unchanged.",
+      leakyDesc: "negative numbers are scaled by 0.2 instead of becoming strictly 0.",
+      linearDesc: "values remain exactly as output by the convolution step.",
+      afterPool: "After Pooling",
+      sizeReduced: "Spatial size reduced from",
+      to: "to",
+      pooled: "Pooled Map",
+      flatVec: "Flattened Vector (1D)",
+      netArch: "Network Architecture",
+      totalParams: "Total Parameters (Weights + Biases)",
+      moveFilter: "Move the filter",
+      movePool: "Move the window",
+      svgInput: "Input",
+      svgHidden: "Hidden",
+      svgOutput: "Output",
+      svgClass1: "Class 1 (Is a 7)",
+      svgClass0: "Class 0 (Not a 7)",
+      svgMore: "more..."
+    },
+    docs: [
+      {
+        title: "A. Input Image Layer",
+        what: "In Computer Vision, every digital image is represented as a 2D matrix of numbers (grayscale) or a 3D tensor (Height × Width × RGB Channels).",
+        why: "Here we use a compact 8×8 grayscale grid with values from 0 (white) to 9 (black) so calculations remain easy to follow (real images use 0 to 255).",
+        math: "Input Shape = (H, W, C) = (8, 8, 1)"
+      },
+      {
+        title: "B. Padding (Border Handling)",
+        what: "Padding adds extra border pixels around the input image—either filled with zeros (Zero Padding) or copied from the nearest edge pixels (Replicate Padding).",
+        why: "Without padding (Valid, p=0), the feature map shrinks after every convolution (8×8 becomes 6×6) and corner pixels are under-utilized. 'Same Padding' (p=1 with a 3×3 kernel) preserves the original 8×8 spatial dimensions.",
+        math: "N_padded = N + 2P  |  N_out = (N + 2P - K) / S + 1"
+      },
+      {
+        title: "C. Convolution & Filters (Kernels)",
+        what: "A filter (kernel) is a small 3×3 matrix of learnable weights that slides across the image with a step (Stride = 1), performing element-wise multiplication and summation.",
+        why: "Each filter acts as a feature detector: one highlights vertical edges, another horizontal edges, sharpening, or blurring. During training, a CNN automatically learns the best filter weights via backpropagation.",
+        math: "G[i, j] = ∑_a ∑_b ( I_padded[i+a, j+b] × F[a, b] )"
+      },
+      {
+        title: "D. Activation Function (ReLU / Leaky ReLU)",
+        what: "Right after convolution, a non-linear activation function is applied element-wise to the feature map. The standard choice in CNNs is ReLU (Rectified Linear Unit).",
+        why: "Without non-linear activation, stacking multiple layers collapses into a single linear transformation unable to model complex patterns. ReLU zeroes out negative activations while keeping positive gradients intact.",
+        math: "ReLU(x) = max(0, x)  |  LeakyReLU(x) = max(0.2x, x)"
+      },
+      {
+        title: "E. Pooling Layer (Downsampling)",
+        what: "Pooling partitions the feature map into non-overlapping 2×2 regions (Stride = 2) and aggregates each block into a single number using Max, Average, or Min.",
+        why: "1) Cuts spatial resolution in half, drastically reducing parameter count and computation. 2) Provides local translation invariance so small shifts in the input do not break recognition.",
+        math: "Out_pool = floor(N_conv / 2)  |  MaxPool = max(a, b, c, d)"
+      },
+      {
+        title: "F. Flattening & Fully Connected Layers (MLP)",
+        what: "Flattening reshapes the 2D pooled feature map into a 1D vector, which is then passed through one or more Dense (Fully Connected) hidden layers to produce the final output probabilities.",
+        why: "Convolutional and pooling layers extract high-level spatial features, while the fully connected layers combine those features globally to classify the image.",
+        math: "y = σ( W · x + b )  |  Total Params = ∑ (N_in × N_out + N_out)"
+      }
+    ]
+  }
+};
+
+// ==================== 2. DATA & PRESETS ====================
+var presets = {
+  '7': [
+    [0,9,9,9,9,9,9,0],
+    [0,0,0,0,0,9,9,0],
+    [0,0,0,0,9,9,0,0],
+    [0,0,0,0,9,9,0,0],
+    [0,0,0,9,9,0,0,0],
+    [0,0,0,9,9,0,0,0],
+    [0,0,9,9,0,0,0,0],
+    [0,0,9,9,0,0,0,0]
+  ],
+  'x': [
+    [9,0,0,0,0,0,0,9],
+    [0,9,0,0,0,0,9,0],
+    [0,0,9,0,0,9,0,0],
+    [0,0,0,9,9,0,0,0],
+    [0,0,0,9,9,0,0,0],
+    [0,0,9,0,0,9,0,0],
+    [0,9,0,0,0,0,9,0],
+    [9,0,0,0,0,0,0,9]
+  ],
+  'box': [
+    [0,0,0,0,0,0,0,0],
+    [0,9,9,9,9,9,9,0],
+    [0,9,0,0,0,0,9,0],
+    [0,9,0,0,0,0,9,0],
+    [0,9,0,0,0,0,9,0],
+    [0,9,0,0,0,0,9,0],
+    [0,9,9,9,9,9,9,0],
+    [0,0,0,0,0,0,0,0]
+  ],
+  'line': [
+    [0,0,0,9,9,0,0,0],
+    [0,0,0,9,9,0,0,0],
+    [0,0,0,9,9,0,0,0],
+    [0,0,0,9,9,0,0,0],
+    [0,0,0,9,9,0,0,0],
+    [0,0,0,9,9,0,0,0],
+    [0,0,0,9,9,0,0,0],
+    [0,0,0,9,9,0,0,0]
+  ]
+};
+
+var filterPresets = {
+  vert:    [[-1, 0, 1], [-1, 0, 1], [-1, 0, 1]],
+  horiz:   [[-1,-1,-1], [ 0, 0, 0], [ 1, 1, 1]],
+  sobelV:  [[-1, 0, 1], [-2, 0, 2], [-1, 0, 1]],
+  sobelH:  [[-1,-2,-1], [ 0, 0, 0], [ 1, 2, 1]],
+  sharpen: [[ 0,-1, 0], [-1, 5,-1], [ 0,-1, 0]],
+  blur:    [[ 1, 1, 1], [ 1, 1, 1], [ 1, 1, 1]],
+  emboss:  [[-2,-1, 0], [-1, 1, 1], [ 0, 1, 2]],
+  outline: [[-1,-1,-1], [-1, 8,-1], [-1,-1,-1]],
+  identity:[[ 0, 0, 0], [ 0, 1, 0], [ 0, 0, 0]]
+};
+
+var img = JSON.parse(JSON.stringify(presets['7']));
+var f = JSON.parse(JSON.stringify(filterPresets['vert']));
+var paddedImg = [], conv = [], relu = [], pool = [], flat = [];
+var padMode = 'none', actMode = 'relu', poolMode = 'max';
+var padSize = 0;
+var hiddenLayers = [6, 4];
+var step = 0, pos = 0, timer = null;
+
+// ==================== 3. LANGUAGE & SELECT OPTIONS SETUP ====================
+function populateSelectOptions() {
+  var t = i18n[lang];
+
+  var imgSel = document.getElementById('presetImg');
+  var curImg = imgSel.value || '7';
+  imgSel.innerHTML = '';
+  for (var k in t.imgPresets) {
+    var opt = document.createElement('option');
+    opt.value = k;
+    opt.textContent = t.imgPresets[k];
+    if (k === curImg) opt.selected = true;
+    imgSel.appendChild(opt);
+  }
+
+  var padSel = document.getElementById('padSelect');
+  var curPad = padSel.value || 'none';
+  padSel.innerHTML = '';
+  for (var pk in t.padOptions) {
+    var optP = document.createElement('option');
+    optP.value = pk;
+    optP.textContent = t.padOptions[pk];
+    if (pk === curPad) optP.selected = true;
+    padSel.appendChild(optP);
+  }
+
+  var filSel = document.getElementById('filterSelect');
+  var curFil = filSel.value || 'vert';
+  filSel.innerHTML = '';
+  for (var fk in t.filterOptions) {
+    var optF = document.createElement('option');
+    optF.value = fk;
+    optF.textContent = t.filterOptions[fk];
+    if (fk === curFil) optF.selected = true;
+    filSel.appendChild(optF);
+  }
+
+  // Static UI Labels
+  document.getElementById('ui-title').textContent = t.title;
+  document.getElementById('ui-subtitle').textContent = t.subtitle;
+  document.getElementById('ui-reset').textContent = t.reset;
+  document.getElementById('ui-lbl-img').textContent = t.lblImg;
+  document.getElementById('ui-lbl-img-hint').textContent = t.lblImgHint;
+  document.getElementById('ui-lbl-pad').textContent = t.lblPad;
+  document.getElementById('ui-lbl-filter').textContent = t.lblFilter;
+  document.getElementById('ui-lbl-actpool').textContent = t.lblActPool;
+  document.getElementById('ui-lbl-arch').textContent = t.lblArch;
+  document.getElementById('ui-btn-add-layer').textContent = t.btnAddLayer;
+  document.getElementById('ui-btn-rem-layer').textContent = t.btnRemLayer;
+  document.getElementById('back').textContent = t.back;
+  document.getElementById('next').textContent = t.next;
+  document.getElementById('ui-doc-header').textContent = t.docHeader;
+  document.getElementById('play').textContent = timer ? t.pause : t.play;
+}
+
+function setLanguage(newLang) {
+  lang = newLang;
+  document.documentElement.lang = newLang;
+  document.getElementById('lang-fr').classList.toggle('active', newLang === 'fr');
+  document.getElementById('lang-en').classList.toggle('active', newLang === 'en');
+  populateSelectOptions();
+  render();
+}
+
+// ==================== 4. PIPELINE COMPUTATION ====================
+function computePipeline() {
+  padMode = document.getElementById('padSelect').value || 'none';
+  actMode = document.getElementById('actSelect').value || 'relu';
+  poolMode = document.getElementById('poolSelect').value || 'max';
+
+  padSize = (padMode === 'zero1' || padMode === 'rep1') ? 1 : (padMode === 'zero2' ? 2 : 0);
+  var pRows = 8 + 2 * padSize;
+  var pCols = 8 + 2 * padSize;
+
+  paddedImg = [];
+  for (var r = 0; r < pRows; r++) {
+    paddedImg[r] = [];
+    for (var c = 0; c < pCols; c++) {
+      var ir = r - padSize;
+      var ic = c - padSize;
+      if (ir >= 0 && ir < 8 && ic >= 0 && ic < 8) {
+        paddedImg[r][c] = img[ir][ic];
+      } else if (padMode === 'rep1') {
+        var cr = Math.max(0, Math.min(7, ir));
+        var cc = Math.max(0, Math.min(7, ic));
+        paddedImg[r][c] = img[cr][cc];
+      } else {
+        paddedImg[r][c] = 0;
+      }
+    }
+  }
+
+  var convSize = pRows - 2;
+  conv = [];
+  relu = [];
+  for (var i = 0; i < convSize; i++) {
+    conv[i] = [];
+    relu[i] = [];
+    for (var j = 0; j < convSize; j++) {
+      var s = 0;
+      for (var a = 0; a < 3; a++) {
+        for (var b = 0; b < 3; b++) {
+          s += paddedImg[i + a][j + b] * f[a][b];
+        }
+      }
+      if (document.getElementById('filterSelect').value === 'blur') {
+        s = Math.round(s / 9);
+      }
+      conv[i][j] = s;
+      if (actMode === 'relu') relu[i][j] = Math.max(0, s);
+      else if (actMode === 'leaky') relu[i][j] = s >= 0 ? s : Math.round(s * 0.2);
+      else relu[i][j] = s;
+    }
+  }
+
+  var poolSize = Math.floor(convSize / 2);
+  pool = [];
+  flat = [];
+  for (var pi = 0; pi < poolSize; pi++) {
+    pool[pi] = [];
+    for (var pj = 0; pj < poolSize; pj++) {
+      var v1 = relu[2 * pi][2 * pj];
+      var v2 = relu[2 * pi][2 * pj + 1];
+      var v3 = relu[2 * pi + 1][2 * pj];
+      var v4 = relu[2 * pi + 1][2 * pj + 1];
+      var pv = 0;
+      if (poolMode === 'max') pv = Math.max(v1, v2, v3, v4);
+      else if (poolMode === 'min') pv = Math.min(v1, v2, v3, v4);
+      else pv = Math.round((v1 + v2 + v3 + v4) / 4);
+      pool[pi][pj] = pv;
+      flat.push(pv);
+    }
+  }
+}
+
+// ==================== 5. UI HELPERS & GRIDS ====================
+function cell(v, size, kind, showNum, hl, isPad, clickAttr) {
+  var bg, col, g, al;
+  if (kind === 'img') {
+    g = Math.round(255 - v * 28);
+    bg = 'rgb(' + g + ',' + g + ',' + g + ')';
+    col = v >= 5 ? '#ffffff' : '#222222';
+    if (isPad) {
+      bg = 'repeating-linear-gradient(45deg, rgba(37,106,191,0.12), rgba(37,106,191,0.12) 4px, transparent 4px, transparent 8px)';
+      col = 'var(--accent)';
+    }
+  } else if (kind === 'fmap') {
+    col = 'var(--text-primary)';
+    if (v > 0) {
+      al = 0.18 + 0.82 * Math.min(v / 27, 1);
+      bg = 'rgba(29, 158, 117, ' + al.toFixed(2) + ')';
+    } else if (v < 0) {
+      al = 0.18 + 0.82 * Math.min(-v / 27, 1);
+      bg = 'rgba(216, 90, 48, ' + al.toFixed(2) + ')';
+    } else {
+      bg = 'var(--surface-2)';
+    }
+  } else {
+    bg = 'var(--surface-2)';
+    col = 'var(--text-muted)';
+  }
+
+  var st = 'width:' + size + 'px;height:' + size + 'px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500;border:0.5px solid var(--border);background:' + bg + ';color:' + col + ';user-select:none;';
+  if (hl) st += 'box-shadow:inset 0 0 0 2.5px #EF9F27;z-index:2;';
+  if (clickAttr) st += 'cursor:pointer;';
+
+  var txt = (kind === 'hide') ? '?' : (showNum ? v : '');
+  return '<div ' + (clickAttr || '') + ' style="' + st + '">' + txt + '</div>';
+}
+
+function grid(data, size, kind, showNum, hlFn, hideFn, padCheckFn, clickType) {
+  var rows = data.length, cols = data[0].length;
+  var sl = i18n[lang].stageLabels;
+  var h = '<div style="display:grid;grid-template-columns:repeat(' + cols + ',' + size + 'px);border:1px solid var(--border-strong);border-radius:4px;overflow:hidden">';
+  for (var r = 0; r < rows; r++) {
+    for (var c = 0; c < cols; c++) {
+      var k = (hideFn && hideFn(r, c)) ? 'hide' : kind;
+      var isPad = padCheckFn ? padCheckFn(r, c) : false;
+      var clickAttr = '';
+      if (clickType === 'img' && !isPad) {
+        clickAttr = 'onclick="togglePixel(' + (r - padSize) + ',' + (c - padSize) + ')" title="' + sl.clickPixelTitle + '"';
+      } else if (clickType === 'filter') {
+        clickAttr = 'onclick="cycleFilterVal(' + r + ',' + c + ')" title="' + sl.clickFilterTitle + '"';
+      }
+      h += cell(data[r][c], size, k, showNum, hlFn ? hlFn(r, c) : false, isPad, clickAttr);
+    }
+  }
+  return h + '</div>';
+}
+
+function block(label, inner, hint) {
+  return '<div style="text-align:center">' +
+    '<div style="font-size:12.5px;font-weight:600;color:var(--text-secondary);margin-bottom:6px">' + label + '</div>' +
+    inner +
+    (hint ? '<div class="interactive-hint">' + hint + '</div>' : '') +
+  '</div>';
+}
+
+function arrow() {
+  return '<div style="align-self:center;font-size:22px;color:var(--text-muted)"><i class="ti ti-arrow-right"></i></div>';
+}
+
+// ==================== 6. DYNAMIC SVG NEURAL NETWORK ====================
+function netSVG() {
+  var sl = i18n[lang].stageLabels;
+  var nIn = flat.length;
+  var layers = [nIn].concat(hiddenLayers).concat([2]);
+  var L = layers.length;
+  var width = 760, height = 340;
+
+  var s = '<svg width="100%" viewBox="0 0 ' + width + ' ' + height + '" style="background:var(--surface-2);border-radius:8px;border:1px solid var(--border)">';
+
+  var xs = [];
+  for (var l = 0; l < L; l++) {
+    xs.push(80 + l * ((width - 190) / (L - 1)));
+  }
+
+  var coords = [];
+  for (var l = 0; l < L; l++) {
+    var count = layers[l];
+    var maxDisplay = Math.min(count, 12);
+    var ys = [];
+    var span = Math.min(height - 70, maxDisplay * 26);
+    var startY = (height / 2) - (span / 2) + 10;
+    for (var k = 0; k < maxDisplay; k++) {
+      ys.push(maxDisplay === 1 ? height / 2 : startY + k * (span / (maxDisplay - 1)));
+    }
+    coords.push(ys);
+  }
+
+  for (var l = 0; l < L - 1; l++) {
+    for (var i = 0; i < coords[l].length; i++) {
+      for (var j = 0; j < coords[l + 1].length; j++) {
+        s += '<line x1="' + xs[l] + '" y1="' + coords[l][i] + '" x2="' + xs[l + 1] + '" y2="' + coords[l + 1][j] + '" stroke="var(--border-strong)" stroke-width="0.6" opacity="0.65"/>';
+      }
+    }
+  }
+
+  for (var l = 0; l < L; l++) {
+    var isInput = (l === 0);
+    var isOutput = (l === L - 1);
+    var fill = isInput ? '#0f6e56' : (isOutput ? '#b77700' : '#534ab7');
+    var labelTitle = isInput
+      ? sl.svgInput + ' (' + nIn + ')'
+      : (isOutput ? sl.svgOutput + ' (2)' : sl.svgHidden + ' ' + l + ' (' + layers[l] + ')');
+
+    s += '<text x="' + xs[l] + '" y="22" font-size="12" font-weight="600" fill="var(--text-primary)" text-anchor="middle">' + labelTitle + '</text>';
+
+    for (var k = 0; k < coords[l].length; k++) {
+      var cy = coords[l][k];
+      var r = isInput ? 10 : 13;
+      s += '<circle cx="' + xs[l] + '" cy="' + cy + '" r="' + r + '" fill="' + fill + '" stroke="#fff" stroke-width="1"/>';
+      if (isInput) {
+        var val = flat[k] !== undefined ? flat[k] : '';
+        s += '<text x="' + xs[l] + '" y="' + cy + '" font-size="9.5" fill="#fff" text-anchor="middle" dominant-baseline="central">' + val + '</text>';
+        s += '<text x="' + (xs[l] - 16) + '" y="' + cy + '" font-size="10" fill="var(--text-secondary)" text-anchor="end" dominant-baseline="central">x' + (k + 1) + '</text>';
+      }
+    }
+    if (layers[l] > coords[l].length) {
+      s += '<text x="' + xs[l] + '" y="' + (height - 10) + '" font-size="11" fill="var(--text-muted)" text-anchor="middle">+' + (layers[l] - coords[l].length) + ' ' + sl.svgMore + '</text>';
+    }
+  }
+
+  s += '<text x="' + (xs[L - 1] + 20) + '" y="' + coords[L - 1][0] + '" font-size="12" font-weight="600" fill="var(--text-primary)" dominant-baseline="central">' + sl.svgClass1 + '</text>';
+  s += '<text x="' + (xs[L - 1] + 20) + '" y="' + coords[L - 1][1] + '" font-size="12" font-weight="600" fill="var(--text-secondary)" dominant-baseline="central">' + sl.svgClass0 + '</text>';
+
+  return s + '</svg>';
+}
+
+// ==================== 7. RENDER FUNCTION ====================
+function renderLayerManager() {
+  var sl = i18n[lang].stageLabels;
+  var html = '<span class="layer-chip" style="border-color:#0f6e56">' + sl.svgInput + ': ' + flat.length + '</span>';
+  for (var idx = 0; idx < hiddenLayers.length; idx++) {
+    html += '<div class="layer-chip">' +
+      '<span>H' + (idx + 1) + ': <b>' + hiddenLayers[idx] + '</b></span>' +
+      '<button onclick="changeNeurons(' + idx + ', -1)">-</button>' +
+      '<button onclick="changeNeurons(' + idx + ', 1)">+</button>' +
+    '</div>';
+  }
+  html += '<span class="layer-chip" style="border-color:#b77700">' + sl.svgOutput + ': 2</span>';
+  document.getElementById('layerManager').innerHTML = html;
+}
+
+function render() {
+  computePipeline();
+  renderLayerManager();
+
+  var t = i18n[lang];
+  var sl = t.stageLabels;
+
+  var pills = '';
+  for (var k = 0; k < t.names.length; k++) {
+    pills += '<button class="pill ' + (k === step ? 'active' : '') + '" onclick="goTo(' + k + ')">' + t.names[k] + '</button>';
+  }
+  document.getElementById('steps').innerHTML = pills;
+  document.getElementById('cap').textContent = t.caps[step];
+
+  var h = '', calc = '', ctrl = false;
+  var convRows = conv.length;
+  var poolRows = pool.length;
+  var maxConvPos = convRows * convRows - 1;
+  var maxPoolPos = poolRows * poolRows - 1;
+
+  if (step === 2 && pos > maxConvPos) pos = 0;
+  if (step === 4 && pos > maxPoolPos) pos = 0;
+
+  var isPadFn = function(r, c) {
+    return r < padSize || r >= 8 + padSize || c < padSize || c >= 8 + padSize;
+  };
+
+  // STEP 0: Picture
+  if (step === 0) {
+    var origPad = padSize; padSize = 0;
+    h = block(sl.pic8x8, grid(img, 36, 'img', false, null, null, null, 'img'), sl.clickPixelHint);
+    padSize = origPad;
+  }
+
+  // STEP 1: Numbers & Padding
+  if (step === 1) {
+    var pDim = paddedImg.length;
+    var cellSz = pDim > 8 ? 28 : 34;
+    h = block(
+      sl.matrixPad + ' (' + pDim + '×' + pDim + ')',
+      grid(paddedImg, cellSz, 'img', true, null, null, isPadFn, 'img'),
+      padSize > 0 ? sl.padHintActive + ' (p=' + padSize + ')' : sl.padHintZero
+    );
+    calc = '<div><b>' + sl.padFormula + ' (' + padSize + ') = ' + pDim + '×' + pDim + '</b></div>';
+  }
+
+  // STEP 2: Convolution (Filter)
+  if (step === 2) {
+    ctrl = true;
+    var r = Math.floor(pos / convRows), c = pos % convRows;
+    var pDim2 = paddedImg.length;
+    var sz = pDim2 > 9 ? 23 : 27;
+
+    h = block(sl.inputPad + ' (' + pDim2 + '×' + pDim2 + ')',
+          grid(paddedImg, sz, 'img', true, function(y, x) { return y >= r && y < r + 3 && x >= c && c + 3 > x; }, null, isPadFn, 'img'))
+      + arrow()
+      + block(sl.filter3x3,
+          grid(f, 36, 'fmap', true, null, null, null, 'filter'),
+          sl.filterHint)
+      + arrow()
+      + block(sl.fmap + ' (' + convRows + '×' + convRows + ')',
+          grid(conv, sz, 'fmap', true, function(y, x) { return y === r && x === c; }, function(y, x) { return y * convRows + x > pos; }));
+
+    for (var a = 0; a < 3; a++) {
+      var w0 = paddedImg[r + a][c], w1 = paddedImg[r + a][c + 1], w2 = paddedImg[r + a][c + 2];
+      var rs = f[a][0] * w0 + f[a][1] * w1 + f[a][2] * w2;
+      calc += '<div>' + sl.row + ' ' + (a + 1) + ': (' + f[a][0] + '×' + w0 + ') + (' + f[a][1] + '×' + w1 + ') + (' + f[a][2] + '×' + w2 + ') = <b>' + rs + '</b></div>';
+    }
+    calc += '<div style="margin-top:4px;border-top:1px solid var(--border);padding-top:4px">' + sl.sum + ' = <b style="color:var(--accent);font-size:15px">' + conv[r][c] + '</b> | ' + sl.formula + ': (8 + 2×' + padSize + ' - 3) + 1 = ' + convRows + '×' + convRows + '</div>';
+  }
+
+  // STEP 3: Activation
+  if (step === 3) {
+    var sz3 = convRows > 7 ? 26 : 32;
+    h = block(sl.fmap + ' (' + convRows + '×' + convRows + ')', grid(conv, sz3, 'fmap', true))
+      + arrow()
+      + block(sl.afterAct + ' ' + actMode.toUpperCase() + ' (' + convRows + '×' + convRows + ')', grid(relu, sz3, 'fmap', true));
+
+    if (actMode === 'relu') calc = '<div><b>ReLU(x) = max(0, x)</b> : ' + sl.reluDesc + '</div>';
+    else if (actMode === 'leaky') calc = '<div><b>Leaky ReLU(x) = max(0.2x, x)</b> : ' + sl.leakyDesc + '</div>';
+    else calc = '<div><b>Linear (None)</b> : ' + sl.linearDesc + '</div>';
+  }
+
+  // STEP 4: Pooling
+  if (step === 4) {
+    ctrl = true;
+    var pr = Math.floor(pos / poolRows), pc = pos % poolRows;
+    var sz4 = convRows > 7 ? 26 : 32;
+
+    h = block(sl.afterAct + ' Activation (' + convRows + '×' + convRows + ')',
+          grid(relu, sz4, 'fmap', true, function(y, x) { return y >= 2 * pr && y < 2 * pr + 2 && x >= 2 * pc && x < 2 * pc + 2; }))
+      + arrow()
+      + block(sl.afterPool + ' ' + poolMode.toUpperCase() + ' (' + poolRows + '×' + poolRows + ')',
+          grid(pool, 36, 'fmap', true, function(y, x) { return y === pr && x === pc; }, function(y, x) { return y * poolRows + x > pos; }));
+
+    var v1 = relu[2 * pr][2 * pc], v2 = relu[2 * pr][2 * pc + 1], v3 = relu[2 * pr + 1][2 * pc], v4 = relu[2 * pr + 1][2 * pc + 1];
+    calc = '<div><b>' + poolMode.toUpperCase() + '(' + v1 + ', ' + v2 + ', ' + v3 + ', ' + v4 + ') = <span style="color:var(--accent)">' + pool[pr][pc] + '</span></b> | ' + sl.sizeReduced + ' ' + convRows + '×' + convRows + ' ' + sl.to + ' ' + poolRows + '×' + poolRows + '</div>';
+  }
+
+  // STEP 5: Flatten & Neural Net
+  if (step === 5) {
+    h = block(sl.pooled + ' (' + poolRows + '×' + poolRows + ')', grid(pool, 30, 'fmap', true))
+      + arrow()
+      + block(sl.flatVec + ' (1×' + flat.length + ')', grid([flat], 26, 'fmap', true))
+      + '<div style="width:100%;margin-top:10px">' + netSVG() + '</div>';
+
+    var allL = [flat.length].concat(hiddenLayers).concat([2]);
+    var totalWeights = 0, totalBiases = 0, breakdown = [];
+    for (var idx = 0; idx < allL.length - 1; idx++) {
+      var w = allL[idx] * allL[idx + 1];
+      var b = allL[idx + 1];
+      totalWeights += w;
+      totalBiases += b;
+      breakdown.push('L' + (idx + 1) + ': (' + allL[idx] + '×' + allL[idx + 1] + ' + ' + b + ')');
+    }
+    calc = '<div><b>' + sl.netArch + ':</b> [' + allL.join(' → ') + '] | <b>' + sl.totalParams + ': ' + (totalWeights + totalBiases) + '</b> (' + breakdown.join(' + ') + ')</div>';
+  }
+
+  document.getElementById('stage').innerHTML = h;
+
+  var ctrlEl = document.getElementById('ctrl');
+  ctrlEl.style.display = ctrl ? 'flex' : 'none';
+  if (ctrl) {
+    var slEl = document.getElementById('slider');
+    slEl.max = (step === 2) ? maxConvPos : maxPoolPos;
+    slEl.value = pos;
+    document.getElementById('ctrlLabel').textContent = (step === 2)
+      ? sl.moveFilter + ' (' + (pos + 1) + '/' + (maxConvPos + 1) + ')'
+      : sl.movePool + ' (' + (pos + 1) + '/' + (maxPoolPos + 1) + ')';
+  }
+
+  var calcEl = document.getElementById('calc');
+  calcEl.style.display = calc ? 'block' : 'none';
+  calcEl.innerHTML = calc;
+
+  document.getElementById('back').style.visibility = (step === 0) ? 'hidden' : 'visible';
+  document.getElementById('next').style.visibility = (step === 5) ? 'hidden' : 'visible';
+
+  // Render A-Z Documentation
+  var d = t.docs[step];
+  document.getElementById('docContent').innerHTML =
+    '<div class="doc-section">' +
+      '<h4>' + d.title + ' — ' + t.whatTitle + '</h4>' +
+      '<p style="color:var(--text-secondary)">' + d.what + '</p>' +
+      '<div class="formula">' + d.math + '</div>' +
+    '</div>' +
+    '<div class="doc-section">' +
+      '<h4>' + t.whyTitle + '</h4>' +
+      '<p style="color:var(--text-secondary)">' + d.why + '</p>' +
+    '</div>';
+}
+
+// ==================== 8. INTERACTIVE HANDLERS ====================
+function togglePixel(r, c) {
+  if (r < 0 || r >= 8 || c < 0 || c >= 8) return;
+  img[r][c] = (img[r][c] >= 5) ? 0 : 9;
+  render();
+}
+
+function cycleFilterVal(r, c) {
+  var vals = [-2, -1, 0, 1, 2, 5, 8];
+  var cur = f[r][c];
+  var nextIdx = (vals.indexOf(cur) + 1) % vals.length;
+  f[r][c] = vals[nextIdx];
+  document.getElementById('filterSelect').value = 'custom';
+  render();
+}
+
+function changePresetImage(val) {
+  img = JSON.parse(JSON.stringify(presets[val]));
+  render();
+}
+
+function changeFilterPreset(val) {
+  if (val === 'custom') return;
+  f = JSON.parse(JSON.stringify(filterPresets[val]));
+  if (step < 2) step = 2;
+  render();
+}
+
+function updateParams() {
+  pos = 0;
+  render();
+}
+
+function addLayer() {
+  if (hiddenLayers.length < 5) {
+    hiddenLayers.push(4);
+    step = 5;
+    render();
+  }
+}
+
+function removeLayer() {
+  if (hiddenLayers.length > 0) {
+    hiddenLayers.pop();
+    step = 5;
+    render();
+  }
+}
+
+function changeNeurons(layerIdx, delta) {
+  var n = hiddenLayers[layerIdx] + delta;
+  if (n >= 1 && n <= 12) {
+    hiddenLayers[layerIdx] = n;
+    step = 5;
+    render();
+  }
+}
+
+function resetAll() {
+  stopTimer();
+  document.getElementById('presetImg').value = '7';
+  document.getElementById('padSelect').value = 'none';
+  document.getElementById('filterSelect').value = 'vert';
+  document.getElementById('actSelect').value = 'relu';
+  document.getElementById('poolSelect').value = 'max';
+  img = JSON.parse(JSON.stringify(presets['7']));
+  f = JSON.parse(JSON.stringify(filterPresets['vert']));
+  hiddenLayers = [6, 4];
+  step = 0; pos = 0;
+  render();
+}
+
+function stopTimer() {
+  if (timer) { clearInterval(timer); timer = null; }
+  document.getElementById('play').textContent = i18n[lang].play;
+}
+
+function goTo(n) {
+  stopTimer();
+  step = n; pos = 0;
+  render();
+}
+
+document.getElementById('back').onclick = function() { if (step > 0) goTo(step - 1); };
+document.getElementById('next').onclick = function() { if (step < 5) goTo(step + 1); };
+document.getElementById('slider').oninput = function() { pos = +this.value; render(); };
+document.getElementById('play').onclick = function() {
+  if (timer) { stopTimer(); return; }
+  this.textContent = i18n[lang].pause;
+  timer = setInterval(function() {
+    var mx = +document.getElementById('slider').max;
+    pos = (pos + 1 > mx) ? 0 : pos + 1;
+    render();
+  }, 450);
+};
+
+populateSelectOptions();
+render();
+</script>
+</body>
+</html>
